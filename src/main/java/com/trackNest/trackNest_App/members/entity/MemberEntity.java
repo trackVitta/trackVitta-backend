@@ -4,6 +4,8 @@ import com.trackNest.trackNest_App.business.entity.BusinessEntity;
 import com.trackNest.trackNest_App.members.MembershipPlan;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,23 +20,24 @@ import java.util.UUID;
 @AllArgsConstructor
 @ToString
 @Table(
+        name = "member_entity",
         uniqueConstraints =
                 {
                         @UniqueConstraint(
                                 name = "uk_businessId_email",
                                 columnNames = {
-                                        "businessEntity", "email"
+                                        "business_entity_id", "email"
                                 }),
                         @UniqueConstraint(
                                 name = "uk_businessId_phone",
                                 columnNames = {
-                                        "businessEntity", "phone"
+                                        "business_entity_id", "phone"
                                 }
                         ),
                         @UniqueConstraint(
                                 name = "uk_businessId_memberIdOfBusiness",
                                 columnNames = {
-                                        "businessEntity", "memberId_ofBusiness"
+                                        "business_entity_id", "memberId_ofBusiness"
                                 }
                         )
                 }
@@ -45,7 +48,11 @@ public class MemberEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
+    @JoinColumn(
+            name = "business_entity_id",
+            foreignKey = @ForeignKey(name = "fk_member_business")
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private BusinessEntity businessEntity;
     @Column(nullable = false)
     private String fullName;
